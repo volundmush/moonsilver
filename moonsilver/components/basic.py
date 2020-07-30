@@ -1,5 +1,6 @@
 from . base import BaseComponent
 from typing import List, Set, Dict, Any
+from datetime import timedelta
 
 
 class ObjectComponent(BaseComponent):
@@ -131,3 +132,52 @@ class MetaComponent(BaseComponent):
     # Database mode is probably some kind of table / collection identifier. key is its primary key.
     database_mode: Any = None
     database_key: Any = None
+
+
+class RegionComponent(BaseComponent):
+    """
+    The RegionComponent is for Entities which are 'Regions', such as the Root, Galaxies, Sectors, Wilderness, etc.
+    Regions can be inhabited by Objects and Structures, all of which should have 3D coordinates.
+    Regions are arranged in a URL-like structure, with the Root having depth 0 and no key.
+    """
+    key: str = ""
+    parent: int = 0
+    depth: int = 0
+    children: Dict[str, int]
+
+    # The objects dictionary does NOT contain other Entities with RegionComponents. Those are Children.
+    objects: Set[int] = set()
+
+
+class RegionLocationComponent(BaseComponent):
+    """
+    RegionLocations are 3D vectors.
+    """
+    region: int = 0
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
+
+
+class RoomLocationComponent(BaseComponent):
+    """
+    If an Object exists inside a room, this Component tracks that.
+    """
+    room: int = 0
+
+
+class RealityLayerComponent(BaseComponent):
+    """
+    For locations that use the Reality Layer system, these properties allow for filtering of which events / objects
+    are visible to who and how they can interact.
+    """
+    exists: Set[str] = set()
+    transmits: Set[str] = set()
+    perceives: Set[str] = set()
+    interacts: Set[str] = set()
+
+
+class ActionQueueComponent(BaseComponent):
+    queue: List[Any] = list()
+    delay: timedelta = timedelta(0)
+    remaining: timedelta = timedelta(0)
